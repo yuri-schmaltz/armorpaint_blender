@@ -288,13 +288,16 @@ class ArmorPaintLivelinkOperator(Operator):
 
         #ERRORS
         if typM != 'MESH':
-            self.report({'ERROR'}, "ArmorPaint only works with Meshes!")
+            self.report({'ERROR'}, "ArmorPaint only works with meshes")
             return {'CANCELLED'}
         if path_exe == "":
             self.report({'ERROR'}, "No ArmorPaint executable path in settings")
             return {'CANCELLED'}
         if scn.armorpaint_properties == "":
-            self.report({'ERROR'}, "Set an ArmorPaint Project directory please")
+            self.report({'ERROR'}, "Set an ArmorPaint project directory first")
+            return {'CANCELLED'}
+        if bpy.data.filepath == "":
+            self.report({'ERROR'}, "Save blend file first")
             return {'CANCELLED'}
         
 
@@ -306,13 +309,11 @@ class ArmorPaintLivelinkOperator(Operator):
             subprocess.Popen([path_exe,armFilepath])
         else:
             # Create a temporary file to store the .obj
-            path_tmp = tempfile.NamedTemporaryFile(suffix=".obj", dir=projP, delete=False)
-            path_tmp_name = path_tmp.name
-            path_tmp.close()
+            path_tmp = bpy.path.abspath(projP) + SEP + "tmp.obj"
         
             # Export current object as obj and open it in armorpaint
             # Export the object as Obj and save it in the correct directory
-            bpy.ops.export_scene.obj(filepath=path_tmp_name,
+            bpy.ops.export_scene.obj(filepath=path_tmp,
                                     check_existing=True,
                                     axis_forward='-Z',
                                     axis_up='Y',
@@ -337,7 +338,7 @@ class ArmorPaintLivelinkOperator(Operator):
                                     path_mode='AUTO')
 
             #Launch ArmorPaint
-            subprocess.Popen([path_exe,path_tmp_name])
+            subprocess.Popen([path_exe,path_tmp])
             
             objM["armorpaint_proj_dir"] = os.path.realpath(bpy.path.abspath(projP))
             objM["armorpaint_filename"] = str(objN) + ".arm"
@@ -416,7 +417,7 @@ class ArmorPaintOpenPanel(View3DPanel, Panel):
                         "filename", 
                         text="")
             col.operator("object.armorpaint_livelink",
-                        text="Open into ArmorPaint",
+                        text="Open in ArmorPaint",
                         icon='TPAINT_HLT')
         else:
             col.label(icon='CANCEL',
