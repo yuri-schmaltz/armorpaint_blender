@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# python
 # ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
@@ -21,14 +19,14 @@
 
 bl_info = {
     "name": "ArmorPaint Live-Link",
-    "author": "PiloeGAO (Leo DEPOIX), Spirou4D",
-    "version": (1, 1, 0),
-    "blender": (2, 83, 0),
+    "author": "PiloeGAO (Leo DEPOIX), Spirou4D, luboslenco",
+    "version": (0, 9, 0),
+    "blender": (3, 6, 0),
     "location": "3D View > Side Bar",
-    "description": "Integration of ArmorPaint into Blender Workflow",
+    "description": "Integration of ArmorPaint into Blender",
     "warning": "Development",
-    "wiki_url": "https://github.com/PiloeGAO/Blender-ArmorPaintLiveLink",
-    "tracker_url": "https://github.com/PiloeGAO/Blender-ArmorPaintLiveLink/issues",
+    "wiki_url": "https://github.com/armory3d/armorpaint_blender",
+    "tracker_url": "https://github.com/armory3d/armorpaint_blender/issues",
     "category": "Paint"}
 
 import bpy, os, subprocess, platform, tempfile
@@ -251,15 +249,12 @@ class ArmorPaintLiveLinkAddonPreferences(AddonPreferences):
         layout = self.layout
 
         if SYSTEM == "Windows":
-            layout.label(text="Current OS: Windows")
             layout.label(text="Please select the location of " +
                                 "the ArmorPaint.exe")
         elif SYSTEM == "Linux":
-            layout.label(text="Current OS: Linux")
             layout.label(text="Please select this path: " +
             "\"ArmorPaint-Installation-Path/ArmorPaint\"")
         elif SYSTEM == "Darwin":
-            layout.label(text="Current OS: MacOS")
             layout.label(text="Please select this path: " +
             "\"ArmorPaint-Installation-Path/ArmorPaint.app/Contents/MacOS/\"")
         layout.prop(self, "path_exe")
