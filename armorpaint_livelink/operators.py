@@ -1,13 +1,3 @@
-import os
-import subprocess
-import bpy
-from bpy.types import Operator
-
-from .utils import generate_material, SEP
-
-
-class ArmorPaintLiveLinkOperator(Operator):
-    """Export the selected object to ArmorPaint."""
 
     bl_idname = "object.armorpaint_livelink"
     bl_label = "Export Selection to ArmorPaint"
@@ -18,37 +8,7 @@ class ArmorPaintLiveLinkOperator(Operator):
 
     def execute(self, context):
         scene = context.scene
-        prefs = context.preferences.addons[__package__].preferences
-        path_exe = prefs.path_exe
 
-        obj_type = context.active_object.type
-        obj_name = context.active_object.name
-        obj = bpy.data.objects[obj_name]
-
-        project_path = scene.armorpaint_properties.project_path
-
-        if obj_type != "MESH":
-            self.report({"ERROR"}, "ArmorPaint only works with meshes")
-            return {"CANCELLED"}
-        if path_exe == "":
-            self.report({"ERROR"}, "No ArmorPaint executable path in settings")
-            return {"CANCELLED"}
-        if scene.armorpaint_properties == "":
-            self.report({"ERROR"}, "Set an ArmorPaint project directory first")
-            return {"CANCELLED"}
-        if bpy.data.filepath == "":
-            self.report({"ERROR"}, "Save blend file first")
-            return {"CANCELLED"}
-
-        if "armorpaint_proj_dir" in obj and os.path.isfile(
-            obj["armorpaint_proj_dir"] + SEP + obj["armorpaint_filename"]
-        ):
-            arm_filepath = obj["armorpaint_proj_dir"] + SEP + obj["armorpaint_filename"]
-            subprocess.Popen([path_exe, arm_filepath])
-        else:
-            tmp_path = bpy.path.abspath(project_path) + SEP + "tmp.obj"
-            bpy.ops.export_scene.obj(
-                filepath=tmp_path,
                 check_existing=True,
                 axis_forward="-Z",
                 axis_up="Y",
@@ -73,19 +33,6 @@ class ArmorPaintLiveLinkOperator(Operator):
                 path_mode="AUTO",
             )
 
-            subprocess.Popen([path_exe, tmp_path])
-
-            obj["armorpaint_proj_dir"] = os.path.realpath(
-                bpy.path.abspath(project_path)
-            )
-            obj["armorpaint_filename"] = f"{obj_name}.arm"
-
-        return {"FINISHED"}
-
-
-class ArmorPaintLiveLinkTexturesLoaderOperator(Operator):
-    """Load textures exported from ArmorPaint and create a material."""
-
     bl_idname = "object.armorpaint_livelink_textures_loader"
     bl_label = "ArmorPaint Live-Link - Load Textures"
 
@@ -95,13 +42,5 @@ class ArmorPaintLiveLinkTexturesLoaderOperator(Operator):
 
     def execute(self, context):
         scene = context.scene
-        obj = bpy.data.objects[context.active_object.name]
-        use_custom_dir = scene.armorpaint_properties.use_custom_texture_dir
-        texture_path = scene.armorpaint_properties.texture_path
-
-        if use_custom_dir and os.path.isdir(texture_path):
-            generate_material(texture_path)
-        else:
-            generate_material(obj["armorpaint_proj_dir"] + SEP + "exports")
 
         return {"FINISHED"}
