@@ -1,20 +1,4 @@
-from __future__ import annotations
 
-from bpy.utils import register_class, unregister_class
-
-from .operators import (
-    ArmorPaintLivelinkOperator,
-    ArmorPaintLivelinkTexturesLoaderOperator,
-)
-from .properties import (
-    ArmorPaintLiveLinkAddonPreferences,
-    ArmorPaintLiveLinkProperties,
-    register_properties,
-    unregister_properties,
-)
-from .ui import (
-    ArmorPaintOpenPanel,
-    ArmorPaintProjectFolder,
     ArmorPaintSyncTexturesPanel,
 )
 
@@ -34,8 +18,7 @@ bl_info = {
 classes = (
     ArmorPaintLiveLinkProperties,
     ArmorPaintLiveLinkAddonPreferences,
-    ArmorPaintLivelinkOperator,
-    ArmorPaintLivelinkTexturesLoaderOperator,
+
     ArmorPaintProjectFolder,
     ArmorPaintOpenPanel,
     ArmorPaintSyncTexturesPanel,
@@ -45,13 +28,13 @@ classes = (
 def register():
     for cls in classes:
         register_class(cls)
-    register_properties()
+
 
 
 def unregister():
     for cls in reversed(classes):
         unregister_class(cls)
-    unregister_properties()
+
 
 
 if __name__ == "__main__":
